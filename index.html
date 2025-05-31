@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singapore Lighting Design Calculator - Premium Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --glow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #60a5fa;
+            --accent-hover: #3b82f6;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --border: #334155;
+            --border-hover: #475569;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+            --glow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        /* Mouse Glow Effect */
+        .mouse-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            transition: all 0.15s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--border-hover);
+        }
+
+        .author {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Form Elements */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: var(--glow);
+        }
+
+        .form-input:hover {
+            border-color: var(--border-hover);
+        }
+
+        /* Radio Group */
+        .radio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .radio-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .radio-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .radio-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 0.75rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .radio-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .radio-card:hover::before {
+            left: 100%;
+        }
+
+        .radio-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .radio-option input:checked + .radio-card {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.05));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.2); }
+            50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
+        }
+
+        .radio-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .radio-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .radio-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Calculate Button */
+        .calculate-btn {
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .calculate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .calculate-btn:hover::before {
+            left: 100%;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Results */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .result-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .result-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Chart */
+        .chart-container {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: -300px;
+            background: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            font-weight: 500;
+        }
+
+        .notification.show {
+            right: 20px;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pass {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-fail {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .sidebar {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .radio-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .radio-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mouse Glow Effect -->
+    <div class="mouse-glow" id="mouseGlow"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">💡</div>
+                <span>MM Lighting Calculator</span>
+            </div>
+            <div class="header-controls">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <div class="author">Created By Kyaw Myo Naing</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Project Information -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    <h2 class="card-title">Project Information</h2>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="projectName">Project Name</label>
+                        <input type="text" id="projectName" class="form-input" placeholder="Enter project name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="location">Location</label>
+                        <input type="text" id="location" class="form-input" placeholder="Singapore location">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="designer">Designer</label>
+                        <input type="text" id="designer" class="form-input" placeholder="Designer name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="date">Date</label>
+                        <input type="date" id="date" class="form-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Space Parameters -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📐</div>
+                    <h2 class="card-title">Space Parameters</h2>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="length">Room Length (m)</label>
+                        <input type="number" id="length" class="form-input" placeholder="10.0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="width">Room Width (m)</label>
+                        <input type="number" id="width" class="form-input" placeholder="8.0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="height">Ceiling Height (m)</label>
+                        <input type="number" id="height" class="form-input" placeholder="3.0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="workingPlane">Working Plane Height (m)</label>
+                        <input type="number" id="workingPlane" class="form-input" value="0.8" step="0.1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Space Type Selection -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🏢</div>
+                    <h2 class="card-title">Space Type (BS EN 12464-1:2021)</h2>
+                </div>
+                <div class="radio-grid">
+                    <label class="radio-option">
+                        <input type="radio" name="spaceType" value="office" data-lux="500">
+                        <div class="radio-card">
+                            <span class="radio-icon">🏢</span>
+                            <div class="radio-title">Office</div>
+                            <div class="radio-subtitle">500 lux</div>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="spaceType" value="classroom" data-lux="300">
+                        <div class="radio-card">
+                            <span class="radio-icon">🎓</span>
+                            <div class="radio-title">Classroom</div>
+                            <div class="radio-subtitle">300 lux</div>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="spaceType" value="hospital" data-lux="750">
+                        <div class="radio-card">
+                            <span class="radio-icon">🏥</span>
+                            <div class="radio-title">Hospital</div>
+                            <div class="radio-subtitle">750 lux</div>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="spaceType" value="retail" data-lux="750">
+                        <div class="radio-card">
+                            <span class="radio-icon">🛍️</span>
+                            <div class="radio-title">Retail</div>
+                            <div class="radio-subtitle">750 lux</div>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="spaceType" value="warehouse" data-lux="200">
+                        <div class="radio-card">
+                            <span class="radio-icon">📦</span>
+                            <div class="radio-title">Warehouse</div>
+                            <div class="radio-subtitle">200 lux</div>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="spaceType" value="restaurant" data-lux="200">
+                        <div class="radio-card">
+                            <span class="radio-icon">🍽️</span>
+                            <div class="radio-title">Restaurant</div>
+                            <div class="radio-subtitle">200 lux</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Fixture Parameters -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">💡</div>
+                    <h2 class="card-title">Fixture Parameters</h2>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="fixtureType">Fixture Type</label>
+                        <select id="fixtureType" class="form-input">
+                            <option value="led-panel">LED Panel (4000lm)</option>
+                            <option value="led-downlight">LED Downlight (2000lm)</option>
+                            <option value="led-tube">LED Tube (3200lm)</option>
+                            <option value="led-highbay">LED High Bay (15000lm)</option>
+                            <option value="led-strip">LED Strip (1000lm/m)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="lumens">Luminous Flux (lumens)</label>
+                        <input type="number" id="lumens" class="form-input" value="4000" step="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="efficiency">Luminaire Efficiency (%)</label>
+                        <input type="number" id="efficiency" class="form-input" value="85" min="50" max="95">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mountingHeight">Mounting Height (m)</label>
+                        <input type="number" id="mountingHeight" class="form-input" step="0.1">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Surface Reflectances -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🎨</div>
+                    <h2 class="card-title">Surface Reflectances</h2>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="ceilingReflectance">Ceiling (%)</label>
+                        <input type="number" id="ceilingReflectance" class="form-input" value="70" min="0" max="90">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="wallReflectance">Wall (%)</label>
+                        <input type="number" id="wallReflectance" class="form-input" value="50" min="0" max="80">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="floorReflectance">Floor (%)</label>
+                        <input type="number" id="floorReflectance" class="form-input" value="20" min="0" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="maintenanceFactor">Maintenance Factor</label>
+                        <input type="number" id="maintenanceFactor" class="form-input" value="0.8" min="0.6" max="1.0" step="0.05">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Type -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <h2 class="card-title">Report Type</h2>
+                </div>
+                <div class="radio-grid">
+                    <label class="radio-option">
+                        <input type="radio" name="reportType" value="basic" checked>
+                        <div class="radio-card">
+                            <span class="radio-icon">📄</span>
+                            <div class="radio-title">Basic</div>
+                            <div class="radio-subtitle">Essential</div>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="reportType" value="detailed">
+                        <div class="radio-card">
+                            <span class="radio-icon">📋</span>
+                            <div class="radio-title">Detailed</div>
+                            <div class="radio-subtitle">Complete</div>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="reportType" value="compliance">
+                        <div class="radio-card">
+                            <span class="radio-icon">✅</span>
+                            <div class="radio-title">Compliance</div>
+                            <div class="radio-subtitle">Standards</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Calculate Button -->
+            <button class="calculate-btn" onclick="calculateLighting()">
+                🚀 Calculate Lighting Design
+            </button>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Calculating lighting parameters...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="container" id="resultsContainer" style="display: none;">
+        <div class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <h2 class="card-title">Calculation Results</h2>
+                </div>
+                <div class="results-grid" id="resultsGrid">
+                    <!-- Results will be populated here -->
+                </div>
+                
+                <!-- Chart -->
+                <div class="chart-container">
+                    <div class="chart-title">Illuminance Analysis</div>
+                    <canvas id="illuminanceChart" width="800" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span>✨ Calculation completed successfully!</span>
+    </div>
+
+    <script>
+        // Theme Management
+        function toggleTheme() {
+            const root = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            const currentTheme = root.getAttribute('data-theme') || 'light';
+            
+            if (currentTheme === 'light') {
+                root.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                root.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const theme = savedTheme || systemTheme;
+            
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('themeIcon').textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Mouse Glow Effect
+        document.addEventListener('mousemove', function(e) {
+            const mouseGlow = document.getElementById('mouseGlow');
+            mouseGlow.style.left = e.clientX + 'px';
+            mouseGlow.style.top = e.clientY + 'px';
+        });
+
+        // Fixture type change handler
+        document.getElementById('fixtureType').addEventListener('change', function() {
+            const lumensMap = {
+                'led-panel': 4000,
+                'led-downlight': 2000,
+                'led-tube': 3200,
+                'led-highbay': 15000,
+                'led-strip': 1000
+            };
+            document.getElementById('lumens').value = lumensMap[this.value];
+        });
+
+        // Auto-calculate mounting height
+        document.getElementById('height').addEventListener('input', function() {
+            const height = parseFloat(this.value);
+            if (height) {
+                document.getElementById('mountingHeight').value = (height - 0.5).toFixed(1);
+            }
+        });
+
+        // Main calculation function
+        function calculateLighting() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultsContainer').style.display = 'none';
+
+            setTimeout(() => {
+                performCalculation();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('resultsContainer').style.display = 'block';
+                showNotification();
+                
+                // Smooth scroll to results
+                document.getElementById('resultsContainer').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 1500);
+        }
+
+        function performCalculation() {
+            // Get input values
+            const length = parseFloat(document.getElementById('length').value) || 10;
+            const width = parseFloat(document.getElementById('width').value) || 8;
+            const height = parseFloat(document.getElementById('height').value) || 3;
+            const workingPlane = parseFloat(document.getElementById('workingPlane').value) || 0.8;
+            const lumens = parseFloat(document.getElementById('lumens').value) || 4000;
+            const efficiency = parseFloat(document.getElementById('efficiency').value) / 100 || 0.85;
+            const ceilingRefl = parseFloat(document.getElementById('ceilingReflectance').value) / 100 || 0.7;
+            const wallRefl = parseFloat(document.getElementById('wallReflectance').value) / 100 || 0.5;
+            const floorRefl = parseFloat(document.getElementById('floorReflectance').value) / 100 || 0.2;
+            const maintenanceFactor = parseFloat(document.getElementById('maintenanceFactor').value) || 0.8;
+            
+            // Get selected space type
+            const selectedSpaceType = document.querySelector('input[name="spaceType"]:checked');
+            const requiredLux = selectedSpaceType ? parseInt(selectedSpaceType.dataset.lux) : 500;
+
+            // Calculate room parameters
+            const roomArea = length * width;
+            const roomIndex = roomArea / ((length + width) * (height - workingPlane));
+            
+            // Calculate utilization factor
+            let utilizationFactor = 0.5;
+            if (roomIndex < 0.6) utilizationFactor = 0.3 + (roomIndex * 0.2);
+            else if (roomIndex < 1.0) utilizationFactor = 0.4 + (roomIndex * 0.15);
+            else if (roomIndex < 1.5) utilizationFactor = 0.5 + (roomIndex * 0.1);
+            else if (roomIndex < 2.0) utilizationFactor = 0.6 + (roomIndex * 0.05);
+            else utilizationFactor = 0.7;
+
+            const reflectanceBonus = (ceilingRefl * 0.3 + wallRefl * 0.2 + floorRefl * 0.1);
+            utilizationFactor += reflectanceBonus;
+            utilizationFactor = Math.min(utilizationFactor, 0.8);
+
+            // LUMEN METHOD CALCULATION
+            const totalLumensRequired = requiredLux * roomArea;
+            const adjustedLumensRequired = totalLumensRequired / (utilizationFactor * maintenanceFactor);
+            const effectiveLumensPerFixture = lumens * efficiency;
+            const numberOfFixtures = Math.ceil(adjustedLumensRequired / effectiveLumensPerFixture);
+            
+            const totalEffectiveLumens = numberOfFixtures * effectiveLumensPerFixture;
+            const actualIlluminance = (totalEffectiveLumens * utilizationFactor * maintenanceFactor) / roomArea;
+            
+            const fixturesPerRow = Math.ceil(Math.sqrt(numberOfFixtures * (length / width)));
+            const fixturesPerColumn = Math.ceil(numberOfFixtures / fixturesPerRow);
+
+            const fixtureWattage = getFixtureWattage(document.getElementById('fixtureType').value);
+            const totalWattage = numberOfFixtures * fixtureWattage;
+            const powerDensity = totalWattage / roomArea;
+            
+            const annualEnergyConsumption = totalWattage * 12 * 250 / 1000;
+            const singaporeElectricityRate = 0.28;
+            const annualEnergyCost = annualEnergyConsumption * singaporeElectricityRate;
+
+            const maxPowerDensity = getMaxPowerDensity(selectedSpaceType?.value || 'office');
+            const isCompliant = powerDensity <= maxPowerDensity && actualIlluminance >= requiredLux * 0.9;
+
+            displayResults({
+                roomArea,
+                roomIndex,
+                utilizationFactor,
+                requiredLux,
+                actualIlluminance,
+                numberOfFixtures,
+                totalWattage,
+                powerDensity,
+                fixturesPerRow,
+                fixturesPerColumn,
+                annualEnergyConsumption,
+                annualEnergyCost,
+                isCompliant,
+                maxPowerDensity
+            });
+
+            createVisualization(actualIlluminance, requiredLux, numberOfFixtures);
+        }
+
+        function getFixtureWattage(fixtureType) {
+            const wattageMap = {
+                'led-panel': 40,
+                'led-downlight': 18,
+                'led-tube': 28,
+                'led-highbay': 120,
+                'led-strip': 12
+            };
+            return wattageMap[fixtureType] || 40;
+        }
+
+        function getMaxPowerDensity(spaceType) {
+            const densityMap = {
+                'office': 12,
+                'classroom': 10,
+                'hospital': 15,
+                'retail': 18,
+                'warehouse': 8,
+                'restaurant': 15
+            };
+            return densityMap[spaceType] || 12;
+        }
+
+        function displayResults(results) {
+            const resultsGrid = document.getElementById('resultsGrid');
+            resultsGrid.innerHTML = `
+                <div class="result-card">
+                    <div class="result-value">${results.actualIlluminance.toFixed(0)}</div>
+                    <div class="result-label">Average Illuminance (lux)</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">${results.numberOfFixtures}</div>
+                    <div class="result-label">Number of Fixtures</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">${results.totalWattage.toFixed(0)}</div>
+                    <div class="result-label">Total Power (W)</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">${results.powerDensity.toFixed(1)}</div>
+                    <div class="result-label">Power Density (W/m²)</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">${results.roomArea.toFixed(1)}</div>
+                    <div class="result-label">Room Area (m²)</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">${results.roomIndex.toFixed(2)}</div>
+                    <div class="result-label">Room Index</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">${(results.utilizationFactor * 100).toFixed(0)}%</div>
+                    <div class="result-label">Utilization Factor</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">$${results.annualEnergyCost.toFixed(0)}</div>
+                    <div class="result-label">Annual Cost (SGD)</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">${results.fixturesPerRow} × ${results.fixturesPerColumn}</div>
+                    <div class="result-label">Fixture Layout</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">
+                        <span class="status-indicator ${results.isCompliant ? 'status-pass' : 'status-fail'}">
+                            ${results.isCompliant ? '✅ PASS' : '❌ FAIL'}
+                        </span>
+                    </div>
+                    <div class="result-label">Singapore Code Compliance</div>
+                </div>
+            `;
+        }
+
+        function createVisualization(actual, required, fixtures) {
+            const canvas = document.getElementById('illuminanceChart');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const chartWidth = canvas.width - 100;
+            const chartHeight = canvas.height - 80;
+            const chartX = 50;
+            const chartY = 40;
+            
+            // Get theme colors
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const bgColor = isDark ? '#1e293b' : '#f8fafc';
+            const textColor = isDark ? '#f8fafc' : '#1e293b';
+            const accentColor = '#3b82f6';
+            const successColor = '#10b981';
+            const errorColor = '#ef4444';
+            
+            // Background
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(chartX, chartY, chartWidth, chartHeight);
+            
+            // Bars
+            const barWidth = chartWidth / 4;
+            const maxValue = Math.max(actual, required) * 1.2;
+            
+            // Required illuminance bar
+            const requiredHeight = (required / maxValue) * chartHeight;
+            ctx.fillStyle = accentColor;
+            ctx.fillRect(chartX + barWidth * 0.5, chartY + chartHeight - requiredHeight, barWidth * 0.6, requiredHeight);
+            
+            // Actual illuminance bar
+            const actualHeight = (actual / maxValue) * chartHeight;
+            ctx.fillStyle = actual >= required * 0.9 ? successColor : errorColor;
+            ctx.fillRect(chartX + barWidth * 1.5, chartY + chartHeight - actualHeight, barWidth * 0.6, actualHeight);
+            
+            // Fixture count visualization
+            const fixtureHeight = (fixtures / (maxValue / 50)) * chartHeight;
+            ctx.fillStyle = accentColor + '80';
+            ctx.fillRect(chartX + barWidth * 2.5, chartY + chartHeight - fixtureHeight, barWidth * 0.6, fixtureHeight);
+            
+            // Labels
+            ctx.fillStyle = textColor;
+            ctx.font = '14px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            
+            ctx.fillText('Required', chartX + barWidth * 0.8, chartY + chartHeight + 20);
+            ctx.fillText(`${required} lux`, chartX + barWidth * 0.8, chartY + chartHeight + 35);
+            
+            ctx.fillText('Actual', chartX + barWidth * 1.8, chartY + chartHeight + 20);
+            ctx.fillText(`${actual.toFixed(0)} lux`, chartX + barWidth * 1.8, chartY + chartHeight + 35);
+            
+            ctx.fillText('Fixtures', chartX + barWidth * 2.8, chartY + chartHeight + 20);
+            ctx.fillText(`${fixtures} units`, chartX + barWidth * 2.8, chartY + chartHeight + 35);
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            document.querySelector('input[name="spaceType"][value="office"]').checked = true;
+            document.getElementById('date').valueAsDate = new Date();
+            document.getElementById('height').value = '3.0';
+            document.getElementById('mountingHeight').value = '2.5';
+            document.getElementById('length').value = '10';
+            document.getElementById('width').value = '8';
+        });
+    </script>
+</body>
+</html>
